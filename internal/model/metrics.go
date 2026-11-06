@@ -26,26 +26,26 @@ type Storage interface {
 }
 
 type MemStorage struct {
-	mu sync.RWMutex
-	Counter map[string] int64
-	Gauges map[string]float64
+	mu      sync.RWMutex
+	counter map[string]int64
+	gauges  map[string]float64
 }
 
 func NewMemStorage() *MemStorage {
 	return &MemStorage{
-		Counter: make(map[string]int64),
-		Gauges: make(map[string]float64),
+		counter: make(map[string]int64),
+		gauges:  make(map[string]float64),
 	}
 }
 
 func (s *MemStorage) AddCounter(name string, value int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.Counter[name] += value
+	s.counter[name] += value
 }
 
 func (s *MemStorage) SetGauge(name string, value float64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.Gauges[name] = value
+	s.gauges[name] = value
 }

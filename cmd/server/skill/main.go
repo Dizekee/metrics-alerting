@@ -9,31 +9,31 @@ import (
 )
 
 func main() {
-	storage := models.NewMemStorage()
-	h := handler.NewHandler(storage)
+	s := models.NewMemStorage()
+	h := handler.NewHandler(s)
 
 	mux := http.NewServeMux()
-	
+
 	log.Printf("starting server on %s", ":8080")
 	mux.HandleFunc("/update/{type}/{name}/{value}", h.UpdateMetric)
-    if err := run(); err != nil {
-        panic(err)
-    }
+	if err := run(); err != nil {
+		panic(err)
+	}
 }
 
 func run() error {
-    return http.ListenAndServe(`:8080`, http.HandlerFunc(webhook))
+	return http.ListenAndServe(`:8080`, http.HandlerFunc(webhook))
 }
 
 func webhook(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodPost {
-        w.WriteHeader(http.StatusMethodNotAllowed)
-        return
-    }
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 
-    _, _ = w.Write([]byte(`
+	_, _ = w.Write([]byte(`
       {
         "response": {
           "text": "Извините, я пока ничего не умею"
