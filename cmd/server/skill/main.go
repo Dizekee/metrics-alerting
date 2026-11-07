@@ -15,6 +15,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/update/{type}/{name}/{value}", h.UpdateMetric)
+	mux.HandleFunc("/", webhook)
 	loggedMux := handler.LoggingMiddleware(mux)
 
 	addr := ":8080"
