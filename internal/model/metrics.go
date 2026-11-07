@@ -49,3 +49,17 @@ func (s *MemStorage) SetGauge(name string, value float64) {
 	defer s.mu.Unlock()
 	s.gauges[name] = value
 }
+
+func (s *MemStorage) GetCounter(name string) (int64, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	value, err := s.counter[name]
+	return value, err
+}
+
+func (s *MemStorage) GetGauge(name string) (float64, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	value, err := s.gauges[name]
+	return value, err
+}
