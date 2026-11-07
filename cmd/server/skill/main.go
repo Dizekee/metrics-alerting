@@ -14,15 +14,14 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	log.Printf("starting server on %s", ":8080")
 	mux.HandleFunc("/update/{type}/{name}/{value}", h.UpdateMetric)
-	if err := run(); err != nil {
-		panic(err)
-	}
-}
+	loggedMux := handler.LoggingMiddleware(mux)
 
-func run() error {
-	return http.ListenAndServe(`:8080`, http.HandlerFunc(webhook))
+	addr := ":8080"
+	log.Printf("starting server on %s", addr)
+	if err := http.ListenAndServe(addr, loggedMux); err != nil {
+		log.Fatalf("server failed: %v", err)
+	}
 }
 
 func webhook(w http.ResponseWriter, r *http.Request) {

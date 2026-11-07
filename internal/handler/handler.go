@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	models "github.com/Dizekee/metrics-alerting.git/internal/model"
 )
@@ -12,8 +14,18 @@ type Handler struct {
 	storage models.Storage
 }
 
-func NewHandler(storage models.Storage) *Handler{
+func NewHandler(storage models.Storage) *Handler {
 	return &Handler{storage: storage}
+}
+
+type loggingResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (lr *loggingResponseWriter) WriteHeader(code int) {
+	lr.statusCode = code
+	lr.ResponseWriter.WriteHeader(code)
 }
 
 func (h *Handler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
@@ -55,4 +67,16 @@ func (h *Handler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "uncnow metric type", http.StatusBadRequest)
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func LoggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+
+		lr := &loggingResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+
+		next.ServeHTTP(lr, r)
+
+		log.Printf("HTTP %s %s | Status: %d | Duration: %v", r.Method, r.URL.Path, lr.statusCode, time.Since(start))
+	})
 }
