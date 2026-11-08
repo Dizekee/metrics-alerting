@@ -6,31 +6,27 @@ import (
 
 	"github.com/Dizekee/metrics-alerting.git/internal/handler"
 	models "github.com/Dizekee/metrics-alerting.git/internal/model"
+	"github.com/go-chi/chi/v5"
 )
 
 func main() {
 	s := models.NewMemStorage()
 	h := handler.NewHandler(s)
 
-	mux := http.NewServeMux()
+	r := chi.NewRouter()
 
-	mux.HandleFunc("/update/{type}/{name}/{value}", h.UpdateMetric)
-	mux.HandleFunc("/", webhook)
-	loggedMux := handler.LoggingMiddleware(mux)
+	r.Use(handler.LoggingMiddleware)
+
+	r.Post("/update/{type}/{name}/{value}", h.UpdateMetric)
+	r.Get("/value/{type}/{name}", h.GetMetric)
+	r.Get("/", h.GetAllMetrics)
+	// r.Post("/", webhook)
 
 	addr := ":8080"
-	log.Printf("starting server on %s", addr)
-	if err := http.ListenAndServe(addr, loggedMux); err != nil {
-		log.Fatalf("server failed: %v", err)
-	}
+	log.Fatal(http.ListenAndServe(addr, r))
 }
 
 func webhook(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json")
 
 	_, _ = w.Write([]byte(`

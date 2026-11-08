@@ -7,14 +7,10 @@ import (
 	"testing"
 
 	models "github.com/Dizekee/metrics-alerting.git/internal/model"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-func buildMux(h *Handler) *http.ServeMux {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/update/{type}/{name}/{value}", h.UpdateMetric)
-	return mux
-}
 
 func TestCheckAlert(t *testing.T) {
 	type want struct {
@@ -95,7 +91,8 @@ func TestCheckAlert(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			storage := models.NewMemStorage()
 			h := NewHandler(storage)
-			mux := buildMux(h)
+			r := chi.NewRouter()
+			r.HandleFunc("/update/{type}/{name}/{value}", h.UpdateMetric)
 
 			req := httptest.NewRequest(test.method, test.url, nil)
 			if test.contentType != "" {
@@ -103,7 +100,7 @@ func TestCheckAlert(t *testing.T) {
 			}
 			w := httptest.NewRecorder()
 
-			mux.ServeHTTP(w, req)
+			r.ServeHTTP(w, req)
 
 			res := w.Result()
 			defer res.Body.Close()

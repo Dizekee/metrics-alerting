@@ -28,11 +28,11 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
-	log.Println("Агент запущен. Нажмите Ctrl+C для остановки.")
+	log.Println("The agent is running. Press Ctrl+C to stop.")
 	<-stop
 
-	log.Println("Получен сигнал остановки. Завершаем работу...")
+	log.Println("A stop signal has been received. We are completing the work...")
 	agent.Stop()
 
-	log.Println("Агент остановлен.")
+	log.Println("The agent has been stopped.")
 }

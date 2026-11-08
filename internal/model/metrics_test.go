@@ -60,7 +60,7 @@ func TestAddCounter(t *testing.T) {
 			for _, call := range test.calls {
 				storage.AddCounter(call.key, call.value)
 			}
-			assert.Equal(t, storage.counter[test.key], test.want)
+			assert.Equal(t, storage.counters[test.key], test.want)
 		})
 	}
 }

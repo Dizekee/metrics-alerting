@@ -33,7 +33,7 @@ func (s *MemStorage) SetGauge(name string, value float64) {
 	s.gauges[name] = value
 }
 
-func (s *MemStorage) Screenshot() (map[string]float64, map[string]int64) {
+func (s *MemStorage) Snapshot() (map[string]float64, map[string]int64) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 

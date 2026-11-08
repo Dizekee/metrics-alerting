@@ -110,7 +110,7 @@ func (a *Agent) Poll() {
 }
 
 func (a *Agent) Report() {
-	gauges, counter := a.storage.Screenshot()
+	gauges, counter := a.storage.Snapshot()
 	for n, v := range gauges {
 		if err := a.sender.SendGauge(n, v); err != nil {
 			log.Printf("send gauge %s: %v", n, v)

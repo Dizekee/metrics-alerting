@@ -23,25 +23,28 @@ type Metrics struct {
 type Storage interface {
 	SetGauge(name string, value float64)
 	AddCounter(name string, value int64)
+	GetCounter(name string) (int64, bool)
+	GetGauge(name string) (float64, bool)
+	Snapshot() (map[string]float64, map[string]int64)
 }
 
 type MemStorage struct {
-	mu      sync.RWMutex
-	counter map[string]int64
-	gauges  map[string]float64
+	mu       sync.RWMutex
+	counters map[string]int64
+	gauges   map[string]float64
 }
 
 func NewMemStorage() *MemStorage {
 	return &MemStorage{
-		counter: make(map[string]int64),
-		gauges:  make(map[string]float64),
+		counters: make(map[string]int64),
+		gauges:   make(map[string]float64),
 	}
 }
 
 func (s *MemStorage) AddCounter(name string, value int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.counter[name] += value
+	s.counters[name] += value
 }
 
 func (s *MemStorage) SetGauge(name string, value float64) {
@@ -53,7 +56,7 @@ func (s *MemStorage) SetGauge(name string, value float64) {
 func (s *MemStorage) GetCounter(name string) (int64, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	value, err := s.counter[name]
+	value, err := s.counters[name]
 	return value, err
 }
 
@@ -62,4 +65,20 @@ func (s *MemStorage) GetGauge(name string) (float64, bool) {
 	defer s.mu.Unlock()
 	value, err := s.gauges[name]
 	return value, err
+}
+
+func (s *MemStorage) Snapshot() (map[string]float64, map[string]int64) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	gauges := make(map[string]float64, len(s.gauges))
+	for n, v := range s.gauges {
+		gauges[n] = v
+	}
+
+	counter := make(map[string]int64, len(s.counters))
+	for n, v := range s.counters {
+		counter[n] = v
+	}
+	return gauges, counter
 }

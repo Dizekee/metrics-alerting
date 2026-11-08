@@ -37,7 +37,7 @@ func TestAgent_Poll(t *testing.T) {
 			a.Poll()
 			a.Poll()
 
-			gauges, counters := a.storage.Screenshot()
+			gauges, counters := a.storage.Snapshot()
 
 			pollCount, ok := counters["PollCount"]
 			if !ok {
