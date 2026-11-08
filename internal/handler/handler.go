@@ -31,6 +31,10 @@ func (lr *loggingResponseWriter) WriteHeader(code int) {
 }
 
 func (h *Handler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	ct := r.Header.Get("Content-type")
 	if ct != "" && !strings.HasPrefix(ct, "text/plain") {
 		http.Error(w, "Content-Type must be text/plain", http.StatusUnsupportedMediaType)
@@ -73,17 +77,21 @@ func (h *Handler) GetMetric(w http.ResponseWriter, r *http.Request) {
 	metricType := chi.URLParam(r, "type")
 	metricName := chi.URLParam(r, "name")
 
-	var valueStr string
-	var found bool
+	var (
+		valueStr string
+		found    bool
+	)
 
 	switch metricType {
 	case models.Counter:
-		value, found := h.storage.GetCounter(metricName)
+		var value int64
+		value, found = h.storage.GetCounter(metricName)
 		if found {
 			valueStr = strconv.FormatInt(value, 10)
 		}
 	case models.Gauge:
-		value, found := h.storage.GetGauge(metricName)
+		var value float64
+		value, found = h.storage.GetGauge(metricName)
 		if found {
 			valueStr = strconv.FormatFloat(value, 'f', -1, 64)
 		}

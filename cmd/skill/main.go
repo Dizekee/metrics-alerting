@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/Dizekee/metrics-alerting.git/internal/handler"
@@ -20,13 +20,26 @@ func main() {
 	r.Post("/update/{type}/{name}/{value}", h.UpdateMetric)
 	r.Get("/value/{type}/{name}", h.GetMetric)
 	r.Get("/", h.GetAllMetrics)
-	// r.Post("/", webhook)
+	r.Post("/", webhook)
 
-	addr := ":8080"
-	log.Fatal(http.ListenAndServe(addr, r))
+	parseFlags()
+
+	if err := run(); err != nil {
+		panic(err)
+	}
+}
+
+func run() error {
+	fmt.Println("Running server on", flagRunAddr)
+	return http.ListenAndServe(flagRunAddr, http.HandlerFunc(webhook))
 }
 
 func webhook(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 
 	_, _ = w.Write([]byte(`

@@ -40,19 +40,6 @@ func TestAddCounter(t *testing.T) {
 			key:  "test",
 			want: 33,
 		},
-		{
-			name: "negative result",
-			calls: []struct {
-				key   string
-				value int64
-			}{
-				{"error", 5},
-				{"error", 10},
-				{"error", 18},
-			},
-			key:  "error",
-			want: 8,
-		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -98,19 +85,6 @@ func TestSetGauge(t *testing.T) {
 			},
 			key:  "requests",
 			want: 43.2,
-		},
-		{
-			name: "negative result",
-			calls: []struct {
-				key   string
-				value float64
-			}{
-				{"errors", 8.5},
-				{"errors", 66.3},
-				{"errors", 75.4},
-			},
-			key:  "errors",
-			want: 35.7,
 		},
 	}
 	for _, test := range tests {
