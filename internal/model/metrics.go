@@ -1,5 +1,7 @@
 package models
 
+import "sync"
+
 const (
 	Counter = "counter"
 	Gauge   = "gauge"
@@ -16,4 +18,48 @@ type Metrics struct {
 	Delta *int64   `json:"delta,omitempty"`
 	Value *float64 `json:"value,omitempty"`
 	Hash  string   `json:"hash,omitempty"`
+}
+
+type Storage interface {
+	SetGauge(name string, value float64)
+	AddCounter(name string, value int64)
+}
+
+type MemStorage struct {
+	mu      sync.RWMutex
+	counter map[string]int64
+	gauges  map[string]float64
+}
+
+func NewMemStorage() *MemStorage {
+	return &MemStorage{
+		counter: make(map[string]int64),
+		gauges:  make(map[string]float64),
+	}
+}
+
+func (s *MemStorage) AddCounter(name string, value int64) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.counter[name] += value
+}
+
+func (s *MemStorage) SetGauge(name string, value float64) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.gauges[name] = value
+}
+
+func (s *MemStorage) GetCounter(name string) (int64, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	value, err := s.counter[name]
+	return value, err
+}
+
+func (s *MemStorage) GetGauge(name string) (float64, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	value, err := s.gauges[name]
+	return value, err
 }
