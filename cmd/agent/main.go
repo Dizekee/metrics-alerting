@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -12,15 +11,12 @@ import (
 )
 
 func main() {
-	urlAddr := flag.String("u", "http://localhost:8080", "server URL")
-	pollSec := flag.Int("p", 2, "pool interval")
-	reportSec := flag.Int("r", 10, "report interval")
-	flag.Parse()
+	parseFlags()
 
 	agent := agent.NewAgent(
-		*urlAddr,
-		time.Duration(*pollSec)*time.Second,
-		time.Duration(*reportSec)*time.Second,
+		urlAddr,
+		time.Duration(pollSec)*time.Second,
+		time.Duration(reportSec)*time.Second,
 	)
 
 	go agent.Run()

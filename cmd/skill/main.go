@@ -24,14 +24,14 @@ func main() {
 
 	parseFlags()
 
-	if err := run(); err != nil {
+	if err := run(r); err != nil {
 		panic(err)
 	}
 }
 
-func run() error {
+func run(r http.Handler) error {
 	fmt.Println("Running server on", flagRunAddr)
-	return http.ListenAndServe(flagRunAddr, http.HandlerFunc(webhook))
+	return http.ListenAndServe(flagRunAddr, r)
 }
 
 func webhook(w http.ResponseWriter, r *http.Request) {
