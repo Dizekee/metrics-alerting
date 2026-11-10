@@ -1,6 +1,6 @@
 module github.com/Dizekee/metrics-alerting.git
 
-go 1.27.1
+go 1.27.0
 
 require (
 	github.com/go-chi/chi/v5 v5.5.0
