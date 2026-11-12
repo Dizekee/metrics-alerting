@@ -18,12 +18,12 @@ type Agent struct {
 	wg             sync.WaitGroup
 }
 
-func NewAgent(serverURL string, pollInterval, reportInterval time.Duration) *Agent {
+func NewAgent(config AgentConfig) *Agent {
 	return &Agent{
 		storage:        NewMemStorage(),
-		sender:         NewSender(serverURL, &http.Client{}),
-		pollInterval:   pollInterval,
-		reportInterval: reportInterval,
+		sender:         NewSender(config.Sender.UrlAddr, &http.Client{}),
+		reportInterval: config.Sender.ReportSec,
+		pollInterval:   config.Poller.PollSec,
 		stop:           make(chan struct{}),
 	}
 }

@@ -20,7 +20,6 @@ func TestAgent_Poll(t *testing.T) {
 		},
 	}
 
-	// Список всех ожидаемых gauge-метрик
 	expectedGauges := []string{
 		"Alloc", "BuckHashSys", "Frees", "GCCPUFraction", "GCSys",
 		"HeapAlloc", "HeapIdle", "HeapInuse", "HeapObjects", "HeapReleased",
@@ -32,7 +31,17 @@ func TestAgent_Poll(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := NewAgent(tt.serverURL, tt.pollInterval, tt.reportInterval)
+			cfg := AgentConfig{
+				Sender: SenderConfig{
+					UrlAddr:   tt.serverURL,
+					ReportSec: tt.reportInterval,
+				},
+				Poller: PollerConfig{
+					PollSec: tt.pollInterval,
+				},
+			}
+
+			a := NewAgent(cfg)
 
 			a.Poll()
 			a.Poll()
