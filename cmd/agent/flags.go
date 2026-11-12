@@ -14,7 +14,7 @@ func parseFlags() agent.AgentConfig {
 		reportSec int
 	)
 
-	flag.StringVar(&urlAddr, "u", "http://localhost:8080", "server URL")
+	flag.StringVar(&urlAddr, "a", "localhost:8080", "server URL")
 	flag.IntVar(&pollSec, "p", 2, "pool interval")
 	flag.IntVar(&reportSec, "r", 10, "report interval")
 
