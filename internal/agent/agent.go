@@ -31,9 +31,12 @@ func NewAgent(config AgentConfig) *Agent {
 func (a *Agent) Run() {
 	a.wg.Add(2)
 
+	a.Poll()
+	a.Report()
+
 	go func() {
 		defer a.wg.Done()
-		a.poolLoop()
+		a.pollLoop()
 	}()
 	go func() {
 		defer a.wg.Done()
@@ -46,7 +49,7 @@ func (a *Agent) Stop() {
 	a.wg.Wait()
 }
 
-func (a *Agent) poolLoop() {
+func (a *Agent) pollLoop() {
 	tim := time.NewTicker(a.pollInterval)
 	defer tim.Stop()
 	for {
@@ -113,12 +116,12 @@ func (a *Agent) Report() {
 	gauges, counter := a.storage.Snapshot()
 	for n, v := range gauges {
 		if err := a.sender.SendGauge(n, v); err != nil {
-			log.Printf("send gauge %s: %v", n, v)
+			log.Printf("send gauge %s: %v", n, err)
 		}
 	}
 	for n, v := range counter {
 		if err := a.sender.SendCounter(n, v); err != nil {
-			log.Printf("send counter %s: %v", n, v)
+			log.Printf("send counter %s: %v", n, err)
 		}
 	}
 }
