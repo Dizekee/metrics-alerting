@@ -5,19 +5,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/Dizekee/metrics-alerting.git/internal/agent"
 )
 
 func main() {
-	parseFlags()
+	config := parseFlags()
 
-	agent := agent.NewAgent(
-		urlAddr,
-		time.Duration(pollSec)*time.Second,
-		time.Duration(reportSec)*time.Second,
-	)
+	agent := agent.NewAgent(config)
 
 	go agent.Run()
 
