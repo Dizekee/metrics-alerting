@@ -3,12 +3,12 @@ package agent
 import "time"
 
 type SenderConfig struct {
-	UrlAddr   string
-	ReportSec time.Duration
+	URLAddr        string
+	ReportInterval time.Duration
 }
 
 type PollerConfig struct {
-	PollSec time.Duration
+	PollInterval time.Duration
 }
 
 type AgentConfig struct {

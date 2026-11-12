@@ -22,11 +22,11 @@ func parseFlags() agent.AgentConfig {
 
 	return agent.AgentConfig{
 		Sender: agent.SenderConfig{
-			UrlAddr:   urlAddr,
-			ReportSec: time.Duration(reportSec) * time.Second,
+			URLAddr:        urlAddr,
+			ReportInterval: time.Duration(reportSec) * time.Second,
 		},
 		Poller: agent.PollerConfig{
-			PollSec: time.Duration(pollSec) * time.Second,
+			PollInterval: time.Duration(pollSec) * time.Second,
 		},
 	}
 }

@@ -21,9 +21,9 @@ type Agent struct {
 func NewAgent(config AgentConfig) *Agent {
 	return &Agent{
 		storage:        NewMemStorage(),
-		sender:         NewSender(config.Sender.UrlAddr, &http.Client{}),
-		reportInterval: config.Sender.ReportSec,
-		pollInterval:   config.Poller.PollSec,
+		sender:         NewSender(config.Sender.URLAddr, &http.Client{}),
+		reportInterval: config.Sender.ReportInterval,
+		pollInterval:   config.Poller.PollInterval,
 		stop:           make(chan struct{}),
 	}
 }

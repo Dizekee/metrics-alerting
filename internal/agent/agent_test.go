@@ -33,11 +33,11 @@ func TestAgent_Poll(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg := AgentConfig{
 				Sender: SenderConfig{
-					UrlAddr:   tt.serverURL,
-					ReportSec: tt.reportInterval,
+					URLAddr:        tt.serverURL,
+					ReportInterval: tt.reportInterval,
 				},
 				Poller: PollerConfig{
-					PollSec: tt.pollInterval,
+					PollInterval: tt.pollInterval,
 				},
 			}
 
