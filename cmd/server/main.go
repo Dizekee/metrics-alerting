@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/Dizekee/metrics-alerting.git/internal/config"
@@ -26,12 +26,12 @@ func main() {
 	flagRunAddr := config.ParseFlags()
 
 	if err := run(r, flagRunAddr); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 
 func run(r http.Handler, flagRunAddr string) error {
-	fmt.Println("Running server on", flagRunAddr)
+	log.Println("Running server on", flagRunAddr)
 	return http.ListenAndServe(flagRunAddr, r)
 }
 
