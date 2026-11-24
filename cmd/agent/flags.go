@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"strings"
 	"time"
 
 	"github.com/Dizekee/metrics-alerting.git/internal/agent"
@@ -14,11 +15,16 @@ func parseFlags() agent.AgentConfig {
 		reportSec int
 	)
 
-	flag.StringVar(&urlAddr, "a", "http://localhost:8080", "server URL")
+	flag.StringVar(&urlAddr, "a", "localhost:8080", "server URL")
 	flag.IntVar(&pollSec, "p", 2, "pool interval")
 	flag.IntVar(&reportSec, "r", 10, "report interval")
 
 	flag.Parse()
+
+	if !strings.HasPrefix(urlAddr, "http://") &&
+		!strings.HasPrefix(urlAddr, "https://") {
+		urlAddr = "http://" + urlAddr
+	}
 
 	return agent.AgentConfig{
 		Sender: agent.SenderConfig{
