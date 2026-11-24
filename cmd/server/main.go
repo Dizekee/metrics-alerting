@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Dizekee/metrics-alerting.git/internal/config"
 	"github.com/Dizekee/metrics-alerting.git/internal/handler"
 	models "github.com/Dizekee/metrics-alerting.git/internal/model"
 	"github.com/go-chi/chi/v5"
@@ -22,14 +23,14 @@ func main() {
 	r.Get("/", h.GetAllMetrics)
 	r.Post("/", webhook)
 
-	parseFlags()
+	flagRunAddr := config.ParseFlags()
 
-	if err := run(r); err != nil {
+	if err := run(r, flagRunAddr); err != nil {
 		panic(err)
 	}
 }
 
-func run(r http.Handler) error {
+func run(r http.Handler, flagRunAddr string) error {
 	fmt.Println("Running server on", flagRunAddr)
 	return http.ListenAndServe(flagRunAddr, r)
 }
